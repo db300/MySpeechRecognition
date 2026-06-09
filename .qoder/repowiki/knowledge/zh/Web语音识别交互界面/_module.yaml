@@ -1,0 +1,23 @@
+schema_version: 1
+module_path: ""
+title: Web语音识别交互界面
+scope:
+    - README.md
+    - index.html
+    - css/
+    - js/
+    - .qoder\repowiki\knowledge\zh\Web语音识别交互界面\_module.yaml
+    - .qoder\repowiki\knowledge\zh\Web语音识别交互界面\技术栈.md
+    - .qoder\repowiki\knowledge\zh\Web语音识别交互界面\架构设计.md
+    - .qoder\repowiki\knowledge\zh\Web语音识别交互界面\概述.md
+    - .qoder\repowiki\knowledge\zh\Web语音识别交互界面\编码规范.md
+    - .qoder\repowiki\knowledge\zh\_index.yaml
+    - css\style.css
+    - fonts\HYNiaoWen260605.ttf
+    - js\app.js
+    - js\particles.js
+    - js\speech.js
+    - js\xfyun-speech.js
+source_files: []
+depends_on: []
+related_to: []
