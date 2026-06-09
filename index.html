@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>语音识别 - VOICE RECOGNITION</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- 粒子背景画布 -->
+  <canvas id="particles"></canvas>
+
+  <!-- 页面顶部录音指示线 -->
+  <div id="recording-line"></div>
+
+  <!-- 主面板 -->
+  <main id="app">
+    <header class="header">
+      <h1 class="title">VOICE RECOGNITION</h1>
+      <p class="subtitle">实时语音转文字</p>
+    </header>
+
+    <!-- 识别文本展示区域 -->
+    <div id="transcript-container">
+      <div id="transcript">
+        <p class="placeholder">点击下方麦克风按钮开始语音识别...</p>
+      </div>
+    </div>
+
+    <!-- 声波动画条 -->
+    <div id="waveform">
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </div>
+
+    <!-- 控制按钮 -->
+    <div class="controls">
+      <button id="btn-mic" class="btn-mic" title="开始/停止录音 (空格键)">
+        <svg class="icon-mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+      </button>
+
+      <div class="btn-group">
+        <button id="btn-clear" class="btn-secondary" title="清除文本">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+        <button id="btn-copy" class="btn-secondary" title="复制文本">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 状态提示 -->
+    <div id="status">点击麦克风按钮或按空格键开始</div>
+
+    <!-- 设置按钮 -->
+    <button id="btn-settings" class="btn-settings" title="设置">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+
+    <!-- 浏览器不支持提示 -->
+    <div id="unsupported" class="hidden">
+      <p>您的浏览器不支持 Web Speech API 语音识别功能。</p>
+      <p>请使用 <strong>Chrome</strong>、<strong>Edge</strong> 或 <strong>Safari</strong> 浏览器访问。</p>
+    </div>
+  </main>
+
+  <!-- 设置面板 -->
+  <div id="settings-overlay" class="hidden">
+    <div id="settings-panel">
+      <div class="settings-header">
+        <h2>设置</h2>
+        <button id="btn-settings-close" class="btn-close" title="关闭">&times;</button>
+      </div>
+
+      <div class="settings-body">
+        <!-- 识别引擎选择 -->
+        <div class="settings-section">
+          <label class="settings-label">识别引擎</label>
+          <div class="settings-radio-group">
+            <label class="settings-radio">
+              <input type="radio" name="backend" value="native" id="rb-native">
+              <span>浏览器原生</span>
+            </label>
+            <label class="settings-radio">
+              <input type="radio" name="backend" value="xfyun" id="rb-xfyun">
+              <span>讯飞语音 (推荐国内用户)</span>
+            </label>
+          </div>
+          <p class="settings-hint">国内网络建议使用讯飞引擎，浏览器原生引擎依赖Google服务</p>
+        </div>
+
+        <!-- 讯飞 API 配置 -->
+        <div id="xfyun-config" class="settings-section">
+          <label class="settings-label">讯飞 API 凭证</label>
+          <p class="settings-hint">
+            请前往 <a href="https://www.xfyun.cn/services/voicedictation" target="_blank" rel="noopener">讯飞开放平台</a> 
+            注册并创建语音听写应用，获取以下凭证
+          </p>
+          <div class="settings-field">
+            <label for="xfyun-appid">APPID</label>
+            <input type="text" id="xfyun-appid" placeholder="请输入 APPID" autocomplete="off">
+          </div>
+          <div class="settings-field">
+            <label for="xfyun-apisecret">APISecret</label>
+            <input type="password" id="xfyun-apisecret" placeholder="请输入 APISecret" autocomplete="off">
+          </div>
+          <div class="settings-field">
+            <label for="xfyun-apikey">APIKey</label>
+            <input type="password" id="xfyun-apikey" placeholder="请输入 APIKey" autocomplete="off">
+          </div>
+        </div>
+      </div>
+
+      <div class="settings-footer">
+        <button id="btn-settings-save" class="btn-save">保存设置</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 复制成功提示 -->
+  <div id="toast" class="hidden">已复制到剪贴板</div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

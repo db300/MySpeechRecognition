@@ -1,0 +1,710 @@
+/* ========================================
+   语音识别网站 - 科幻暗色主题样式
+   ======================================== */
+
+/* 字体定义 */
+@font-face {
+  font-family: 'HYNiaoWen';
+  src: url('../fonts/HYNiaoWen260605.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* CSS 变量 */
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --text-primary: #e0e0ff;
+  --text-muted: #6a6a8a;
+  --accent-cyan: #00f0ff;
+  --accent-purple: #bf00ff;
+  --color-success: #00ff88;
+  --color-danger: #ff3366;
+  --border-color: #1a1a2e;
+  --font-main: 'HYNiaoWen', 'Microsoft YaHei', sans-serif;
+  --font-ui: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+}
+
+/* 重置与基础 */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ========================================
+   粒子画布
+   ======================================== */
+#particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========================================
+   录音指示线
+   ======================================== */
+#recording-line {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--color-success);
+  box-shadow: 0 0 8px var(--color-success), 0 0 20px var(--color-success);
+  z-index: 100;
+  transition: width 0.5s ease;
+}
+
+#recording-line.active {
+  width: 100%;
+}
+
+/* ========================================
+   主面板
+   ======================================== */
+#app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 60px 24px 40px;
+}
+
+/* ========================================
+   标题区域
+   ======================================== */
+.header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.title {
+  font-family: var(--font-ui);
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: 0.3em;
+  color: var(--accent-cyan);
+  text-shadow:
+    0 0 7px rgba(0, 240, 255, 0.6),
+    0 0 20px rgba(0, 240, 255, 0.3),
+    0 0 42px rgba(0, 240, 255, 0.15);
+  animation: neonFlicker 4s ease-in-out infinite;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  letter-spacing: 0.15em;
+}
+
+@keyframes neonFlicker {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  93% { opacity: 0.8; }
+  94% { opacity: 1; }
+  96% { opacity: 0.9; }
+  97% { opacity: 1; }
+}
+
+/* ========================================
+   文本展示区域
+   ======================================== */
+#transcript-container {
+  width: 100%;
+  max-width: 800px;
+  flex: 1;
+  min-height: 300px;
+  max-height: 60vh;
+  margin-bottom: 32px;
+  padding: 24px 28px;
+  background: rgba(18, 18, 26, 0.7);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-cyan) transparent;
+}
+
+#transcript-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+#transcript-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+#transcript-container::-webkit-scrollbar-thumb {
+  background: var(--accent-cyan);
+  border-radius: 2px;
+}
+
+#transcript {
+  font-family: var(--font-main);
+  font-size: 1.5rem;
+  line-height: 2;
+  color: var(--text-primary);
+  word-break: break-all;
+}
+
+#transcript .placeholder {
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  font-size: 1rem;
+  text-align: center;
+  padding-top: 80px;
+}
+
+/* 最终识别结果 - 霓虹效果 */
+#transcript .final {
+  color: var(--text-primary);
+  text-shadow:
+    0 0 5px rgba(224, 224, 255, 0.3),
+    0 0 15px rgba(0, 240, 255, 0.15);
+}
+
+/* 中间识别结果 - 弱化半透明 */
+#transcript .interim {
+  color: var(--accent-cyan);
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+/* ========================================
+   声波动画
+   ======================================== */
+#waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 40px;
+  margin-bottom: 24px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+#waveform.active {
+  opacity: 1;
+}
+
+#waveform .bar {
+  width: 4px;
+  height: 8px;
+  background: var(--color-success);
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--color-success);
+  transition: height 0.1s ease;
+}
+
+#waveform.active .bar {
+  animation: waveBar 1s ease-in-out infinite;
+}
+
+#waveform.active .bar:nth-child(1) { animation-delay: 0s; }
+#waveform.active .bar:nth-child(2) { animation-delay: 0.1s; }
+#waveform.active .bar:nth-child(3) { animation-delay: 0.2s; }
+#waveform.active .bar:nth-child(4) { animation-delay: 0.3s; }
+#waveform.active .bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes waveBar {
+  0%, 100% { height: 8px; }
+  50% { height: 32px; }
+}
+
+/* ========================================
+   控制按钮
+   ======================================== */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 20px;
+}
+
+.btn-mic {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid var(--accent-cyan);
+  background: rgba(0, 240, 255, 0.05);
+  color: var(--accent-cyan);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 0 5px rgba(0, 240, 255, 0.2),
+    0 0 15px rgba(0, 240, 255, 0.1);
+  position: relative;
+}
+
+.btn-mic:hover {
+  background: rgba(0, 240, 255, 0.12);
+  box-shadow:
+    0 0 8px rgba(0, 240, 255, 0.4),
+    0 0 25px rgba(0, 240, 255, 0.2);
+}
+
+.btn-mic .icon-mic {
+  width: 28px;
+  height: 28px;
+}
+
+/* 录音中的麦克风按钮 */
+.btn-mic.listening {
+  border-color: var(--color-success);
+  color: var(--color-success);
+  background: rgba(0, 255, 136, 0.08);
+  animation: micPulse 2s ease-in-out infinite;
+  box-shadow:
+    0 0 8px rgba(0, 255, 136, 0.4),
+    0 0 25px rgba(0, 255, 136, 0.2);
+}
+
+@keyframes micPulse {
+  0%, 100% {
+    box-shadow:
+      0 0 8px rgba(0, 255, 136, 0.4),
+      0 0 25px rgba(0, 255, 136, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 15px rgba(0, 255, 136, 0.6),
+      0 0 40px rgba(0, 255, 136, 0.3),
+      0 0 60px rgba(0, 255, 136, 0.1);
+  }
+}
+
+.btn-group {
+  display: flex;
+  gap: 12px;
+}
+
+.btn-secondary {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: rgba(18, 18, 26, 0.6);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+}
+
+.btn-secondary .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================
+   状态提示
+   ======================================== */
+#status {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  transition: color 0.3s ease;
+}
+
+#status.active {
+  color: var(--color-success);
+}
+
+#status.error {
+  color: var(--color-danger);
+}
+
+/* ========================================
+   浏览器不支持提示
+   ======================================== */
+#unsupported {
+  text-align: center;
+  padding: 40px;
+  background: rgba(255, 51, 102, 0.08);
+  border: 1px solid rgba(255, 51, 102, 0.3);
+  border-radius: 12px;
+  max-width: 500px;
+}
+
+#unsupported p {
+  margin-bottom: 12px;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+#unsupported strong {
+  color: var(--accent-cyan);
+}
+
+/* ========================================
+   Toast 提示
+   ======================================== */
+#toast {
+  position: fixed;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 10px 24px;
+  background: rgba(0, 240, 255, 0.15);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  color: var(--accent-cyan);
+  font-size: 0.85rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 200;
+  pointer-events: none;
+}
+
+#toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ========================================
+   设置按钮
+   ======================================== */
+.btn-settings {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-color);
+  background: rgba(18, 18, 26, 0.6);
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.btn-settings:hover {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.2);
+}
+
+.btn-settings .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* ========================================
+   设置面板
+   ======================================== */
+#settings-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#settings-overlay.hidden {
+  display: none !important;
+}
+
+#settings-panel {
+  width: 90%;
+  max-width: 480px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), 0 20px 60px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-header h2 {
+  font-family: var(--font-ui);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.btn-close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.4rem;
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-close:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+}
+
+.settings-body {
+  padding: 24px;
+}
+
+.settings-section {
+  margin-bottom: 24px;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+
+.settings-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.settings-hint a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+}
+
+.settings-hint a:hover {
+  text-decoration: underline;
+}
+
+.settings-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.settings-radio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(10, 10, 15, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-radio:hover {
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+.settings-radio input[type="radio"] {
+  accent-color: var(--accent-cyan);
+  width: 16px;
+  height: 16px;
+}
+
+.settings-radio input[type="radio"]:checked + span {
+  color: var(--accent-cyan);
+}
+
+.settings-radio span {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.settings-field {
+  margin-bottom: 14px;
+}
+
+.settings-field:last-child {
+  margin-bottom: 0;
+}
+
+.settings-field label {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.settings-field input {
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(10, 10, 15, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-family: var(--font-ui);
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.settings-field input::placeholder {
+  color: rgba(106, 106, 138, 0.5);
+}
+
+.settings-field input:focus {
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 2px rgba(0, 240, 255, 0.1);
+}
+
+#xfyun-config.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.settings-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-save {
+  padding: 10px 24px;
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid var(--accent-cyan);
+  border-radius: 8px;
+  color: var(--accent-cyan);
+  font-size: 0.88rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-save:hover {
+  background: rgba(0, 240, 255, 0.2);
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.2);
+}
+
+/* ========================================
+   响应式适配
+   ======================================== */
+@media (max-width: 768px) {
+  #app {
+    padding: 40px 16px 30px;
+  }
+
+  .title {
+    font-size: 1.6rem;
+    letter-spacing: 0.15em;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
+  }
+
+  .header {
+    margin-bottom: 32px;
+  }
+
+  #transcript-container {
+    min-height: 200px;
+    max-height: 50vh;
+    padding: 16px 20px;
+  }
+
+  #transcript {
+    font-size: 1.2rem;
+    line-height: 1.8;
+  }
+
+  .btn-mic {
+    width: 56px;
+    height: 56px;
+  }
+
+  .btn-mic .icon-mic {
+    width: 24px;
+    height: 24px;
+  }
+
+  .btn-secondary {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.2rem;
+    letter-spacing: 0.1em;
+  }
+
+  #transcript {
+    font-size: 1rem;
+  }
+
+  .controls {
+    gap: 16px;
+  }
+}
