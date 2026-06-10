@@ -2,10 +2,12 @@
  * 语音识别管理器 - 多后端支持
  * - 浏览器原生 Web Speech API
  * - 讯飞语音听写 WebSocket API
- * - 自动检测网络错误并切换后端
+ * - 阿里云智能语音交互 WebSocket API
+ * - 自动检测错误并切换后端
  */
 
 import { XfyunSpeech } from './xfyun-speech.js';
+import { AliyunSpeech } from './aliyun-speech.js';
 
 export const SpeechState = {
   IDLE: 'idle',
@@ -16,6 +18,7 @@ export const SpeechState = {
 export const BackendType = {
   NATIVE: 'native',
   XFYUN: 'xfyun',
+  ALIYUN: 'aliyun',
 };
 
 export class SpeechRecognition {
@@ -33,6 +36,9 @@ export class SpeechRecognition {
 
     // 讯飞 Speech Recognition
     this.xfyunRecognition = new XfyunSpeech();
+
+    // 阿里云 Speech Recognition
+    this.aliyunRecognition = new AliyunSpeech();
 
     // 自动切换标志
     this.nativeFailed = false;
@@ -58,6 +64,28 @@ export class SpeechRecognition {
     });
 
     this.xfyunRecognition.onStateChange((state, message) => {
+      switch (state) {
+        case 'idle':
+          this._setState(SpeechState.IDLE);
+          break;
+        case 'listening':
+          this._setState(SpeechState.LISTENING);
+          break;
+        case 'error':
+          this._setState(SpeechState.ERROR, message);
+          break;
+      }
+    });
+
+    // 初始化阿里云回调
+    this.aliyunRecognition.onResult((finalText, interimText) => {
+      this.finalTranscript = finalText;
+      if (this.resultCallback) {
+        this.resultCallback(finalText, interimText);
+      }
+    });
+
+    this.aliyunRecognition.onStateChange((state, message) => {
       switch (state) {
         case 'idle':
           this._setState(SpeechState.IDLE);
@@ -149,11 +177,31 @@ export class SpeechRecognition {
   }
 
   /**
+   * 配置阿里云凭证
+   */
+  configureAliyun(config) {
+    this.aliyunRecognition.configure(config);
+    this._saveConfig();
+  }
+
+  /**
+   * 获取阿里云配置
+   */
+  getAliyunConfig() {
+    return {
+      appKey: this.aliyunRecognition.appKey,
+      token: this.aliyunRecognition.token,
+    };
+  }
+
+  /**
    * 开始录音识别
    */
   startListening() {
     if (this.backend === BackendType.XFYUN) {
       this._startXfyun();
+    } else if (this.backend === BackendType.ALIYUN) {
+      this._startAliyun();
     } else {
       // 如果原生API之前因网络错误失败，且讯飞已配置，直接使用讯飞
       if (this.nativeFailed && this.xfyunRecognition.isConfigured()) {
@@ -177,6 +225,8 @@ export class SpeechRecognition {
   stopListening() {
     if (this.backend === BackendType.XFYUN) {
       this.xfyunRecognition.stopListening();
+    } else if (this.backend === BackendType.ALIYUN) {
+      this.aliyunRecognition.stopListening();
     } else {
       this._stopNative();
     }
@@ -197,6 +247,8 @@ export class SpeechRecognition {
     this.finalTranscript = '';
     if (this.backend === BackendType.XFYUN) {
       this.xfyunRecognition.resetTranscript();
+    } else if (this.backend === BackendType.ALIYUN) {
+      this.aliyunRecognition.resetTranscript();
     }
   }
 
@@ -206,6 +258,7 @@ export class SpeechRecognition {
   destroy() {
     this._stopNative();
     this.xfyunRecognition.destroy();
+    this.aliyunRecognition.destroy();
   }
 
   // ---- 原生 API 方法 ----
@@ -340,6 +393,16 @@ export class SpeechRecognition {
     this.xfyunRecognition.startListening();
   }
 
+  // ---- 阿里云 API 方法 ----
+
+  _startAliyun() {
+    if (!this.aliyunRecognition.isConfigured()) {
+      this._setState(SpeechState.ERROR, '请先在设置中配置阿里云 AppKey 和 Token');
+      return;
+    }
+    this.aliyunRecognition.startListening();
+  }
+
   // ---- 内部方法 ----
 
   _setState(newState, message, openSettings = false) {
@@ -360,6 +423,10 @@ export class SpeechRecognition {
           apiSecret: this.xfyunRecognition.apiSecret,
           apiKey: this.xfyunRecognition.apiKey,
         },
+        aliyun: {
+          appKey: this.aliyunRecognition.appKey,
+          token: this.aliyunRecognition.token,
+        },
       };
       localStorage.setItem('speech-recognition-config', JSON.stringify(config));
     } catch (e) {
@@ -377,6 +444,9 @@ export class SpeechRecognition {
         }
         if (config.xfyun) {
           this.xfyunRecognition.configure(config.xfyun);
+        }
+        if (config.aliyun) {
+          this.aliyunRecognition.configure(config.aliyun);
         }
       }
     } catch (e) {

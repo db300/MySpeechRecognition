@@ -102,8 +102,12 @@
               <input type="radio" name="backend" value="xfyun" id="rb-xfyun">
               <span>讯飞语音 (推荐国内用户)</span>
             </label>
+            <label class="settings-radio">
+              <input type="radio" name="backend" value="aliyun" id="rb-aliyun">
+              <span>阿里云语音 (推荐国内用户)</span>
+            </label>
           </div>
-          <p class="settings-hint">国内网络建议使用讯飞引擎，浏览器原生引擎依赖Google服务</p>
+          <p class="settings-hint">国内网络建议使用讯飞或阿里云引擎，浏览器原生引擎依赖Google服务。</p>
         </div>
 
         <!-- 讯飞 API 配置 -->
@@ -125,6 +129,24 @@
             <label for="xfyun-apikey">APIKey</label>
             <input type="password" id="xfyun-apikey" placeholder="请输入 APIKey" autocomplete="off">
           </div>
+        </div>
+
+        <!-- 阿里云 API 配置 -->
+        <div id="aliyun-config" class="settings-section">
+          <label class="settings-label">阿里云 API 凭证</label>
+          <p class="settings-hint">
+            请前往 <a href="https://nls-portal.console.aliyun.com/" target="_blank" rel="noopener">阿里云智能语音交互控制台</a>
+            创建项目获取 AppKey，并获取 Access Token
+          </p>
+          <div class="settings-field">
+            <label for="aliyun-appkey">AppKey</label>
+            <input type="text" id="aliyun-appkey" placeholder="请输入 AppKey" autocomplete="off">
+          </div>
+          <div class="settings-field">
+            <label for="aliyun-token">Token</label>
+            <input type="password" id="aliyun-token" placeholder="请输入 Access Token" autocomplete="off">
+          </div>
+          <p class="settings-hint">Token 有效期 24 小时，过期后需重新获取。可在控制台手动获取 Token，或通过服务端 API 自动生成。</p>
         </div>
       </div>
 

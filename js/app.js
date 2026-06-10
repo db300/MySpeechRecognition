@@ -34,10 +34,14 @@ class App {
     this.btnSettingsSave = document.getElementById('btn-settings-save');
     this.rbNative = document.getElementById('rb-native');
     this.rbXfyun = document.getElementById('rb-xfyun');
+    this.rbAliyun = document.getElementById('rb-aliyun');
     this.xfyunConfig = document.getElementById('xfyun-config');
     this.xfyunAppId = document.getElementById('xfyun-appid');
     this.xfyunApiSecret = document.getElementById('xfyun-apisecret');
     this.xfyunApiKey = document.getElementById('xfyun-apikey');
+    this.aliyunConfig = document.getElementById('aliyun-config');
+    this.aliyunAppKey = document.getElementById('aliyun-appkey');
+    this.aliyunToken = document.getElementById('aliyun-token');
   }
 
   init() {
@@ -107,6 +111,9 @@ class App {
     // 引擎切换
     this.rbNative.addEventListener('change', () => this._onBackendChange());
     this.rbXfyun.addEventListener('change', () => this._onBackendChange());
+    this.rbAliyun.addEventListener('change', () => this._onBackendChange());
+
+
 
     // 保存设置
     this.btnSettingsSave.addEventListener('click', () => this._saveSettings());
@@ -131,10 +138,13 @@ class App {
   _syncSettingsUI() {
     const backend = this.speech.getBackend();
     const xfyunConfig = this.speech.getXfyunConfig();
+    const aliyunConfig = this.speech.getAliyunConfig();
 
     // 同步引擎选择
     if (backend === BackendType.XFYUN) {
       this.rbXfyun.checked = true;
+    } else if (backend === BackendType.ALIYUN) {
+      this.rbAliyun.checked = true;
     } else {
       this.rbNative.checked = true;
     }
@@ -144,12 +154,18 @@ class App {
     this.xfyunApiSecret.value = xfyunConfig.apiSecret || '';
     this.xfyunApiKey.value = xfyunConfig.apiKey || '';
 
-    // 更新讯飞配置区域状态
+    // 同步阿里云配置
+    this.aliyunAppKey.value = aliyunConfig.appKey || '';
+    this.aliyunToken.value = aliyunConfig.token || '';
+
+    // 更新配置区域状态
     this._updateXfyunConfigState();
+    this._updateAliyunConfigState();
   }
 
   _onBackendChange() {
     this._updateXfyunConfigState();
+    this._updateAliyunConfigState();
   }
 
   _updateXfyunConfigState() {
@@ -160,8 +176,23 @@ class App {
     }
   }
 
+  _updateAliyunConfigState() {
+    if (this.rbAliyun.checked) {
+      this.aliyunConfig.classList.remove('disabled');
+    } else {
+      this.aliyunConfig.classList.add('disabled');
+    }
+  }
+
   _saveSettings() {
-    const backend = this.rbXfyun.checked ? BackendType.XFYUN : BackendType.NATIVE;
+    let backend;
+    if (this.rbXfyun.checked) {
+      backend = BackendType.XFYUN;
+    } else if (this.rbAliyun.checked) {
+      backend = BackendType.ALIYUN;
+    } else {
+      backend = BackendType.NATIVE;
+    }
 
     this.speech.setBackend(backend);
 
@@ -170,6 +201,13 @@ class App {
         appId: this.xfyunAppId.value.trim(),
         apiSecret: this.xfyunApiSecret.value.trim(),
         apiKey: this.xfyunApiKey.value.trim(),
+      });
+    }
+
+    if (backend === BackendType.ALIYUN) {
+      this.speech.configureAliyun({
+        appKey: this.aliyunAppKey.value.trim(),
+        token: this.aliyunToken.value.trim(),
       });
     }
 
@@ -223,7 +261,11 @@ class App {
         this.btnMic.classList.add('listening');
         this.waveform.classList.add('active');
         this.recordingLine.classList.add('active');
-        const backendLabel = this.speech.getBackend() === BackendType.XFYUN ? '讯飞' : '浏览器原生';
+        const backendLabel = this.speech.getBackend() === BackendType.XFYUN
+          ? '讯飞'
+          : this.speech.getBackend() === BackendType.ALIYUN
+            ? '阿里云'
+            : '浏览器原生';
         this.statusEl.textContent = `正在聆听... (${backendLabel})`;
         this.statusEl.className = 'active';
 
@@ -252,6 +294,8 @@ class App {
     this.speech.resetTranscript();
     this.transcriptEl.innerHTML = '<p class="placeholder">点击下方麦克风按钮开始语音识别...</p>';
   }
+
+
 
   async _copyTranscript() {
     const text = this.speech.getFinalTranscript();
