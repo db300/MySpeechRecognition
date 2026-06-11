@@ -55,7 +55,7 @@ WEB_API[Web Speech API]
 WEBSOCKET[WebSocket API]
 AUDIOCONTEXT[AudioContext API]
 LOCALSTORAGE[localStorage API]
-end
+END
 HTML --> APP
 APP --> SPEECH
 APP --> PARTICLES

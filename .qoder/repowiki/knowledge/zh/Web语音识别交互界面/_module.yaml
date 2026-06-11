@@ -17,7 +17,7 @@ scope:
     - js\app.js
     - js\particles.js
     - js\speech.js
-    - js\xfyun-speech.js
+    - js\aliyun-speech.js
 source_files: []
 depends_on: []
 related_to: []

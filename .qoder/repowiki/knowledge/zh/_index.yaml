@@ -2,7 +2,7 @@
 schema_version: 1
 locale: zh-CN
 branch: main
-exported_at: "2026-06-09T05:57:03Z"
+exported_at: "2026-06-10T07:46:14Z"
 modules:
     "":
         dir_name: Web语音识别交互界面
@@ -23,7 +23,7 @@ modules:
             - js\app.js
             - js\particles.js
             - js\speech.js
-            - js\xfyun-speech.js
+            - js\aliyun-speech.js
         source_files: []
         children: []
         depends_on: []
