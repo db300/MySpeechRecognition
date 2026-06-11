@@ -664,11 +664,6 @@ body {
   transition: width 0.3s ease;
 }
 
-#xfyun-config.disabled {
-  opacity: 0.4;
-  pointer-events: none;
-}
-
 #aliyun-config.disabled {
   opacity: 0.4;
   pointer-events: none;

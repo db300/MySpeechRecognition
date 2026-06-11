@@ -1,12 +1,10 @@
 /**
  * 语音识别管理器 - 多后端支持
  * - 浏览器原生 Web Speech API
- * - 讯飞语音听写 WebSocket API
  * - 阿里云智能语音交互 WebSocket API
  * - 自动检测错误并切换后端
  */
 
-import { XfyunSpeech } from './xfyun-speech.js';
 import { AliyunSpeech } from './aliyun-speech.js';
 
 export const SpeechState = {
@@ -17,7 +15,6 @@ export const SpeechState = {
 
 export const BackendType = {
   NATIVE: 'native',
-  XFYUN: 'xfyun',
   ALIYUN: 'aliyun',
 };
 
@@ -33,9 +30,6 @@ export class SpeechRecognition {
 
     // 原生 Speech Recognition
     this.nativeRecognition = null;
-
-    // 讯飞 Speech Recognition
-    this.xfyunRecognition = new XfyunSpeech();
 
     // 阿里云 Speech Recognition
     this.aliyunRecognition = new AliyunSpeech();
@@ -55,28 +49,6 @@ export class SpeechRecognition {
    * 初始化
    */
   init() {
-    // 初始化讯飞回调
-    this.xfyunRecognition.onResult((finalText, interimText) => {
-      this.finalTranscript = finalText;
-      if (this.resultCallback) {
-        this.resultCallback(finalText, interimText);
-      }
-    });
-
-    this.xfyunRecognition.onStateChange((state, message) => {
-      switch (state) {
-        case 'idle':
-          this._setState(SpeechState.IDLE);
-          break;
-        case 'listening':
-          this._setState(SpeechState.LISTENING);
-          break;
-        case 'error':
-          this._setState(SpeechState.ERROR, message);
-          break;
-      }
-    });
-
     // 初始化阿里云回调
     this.aliyunRecognition.onResult((finalText, interimText) => {
       this.finalTranscript = finalText;
@@ -158,25 +130,6 @@ export class SpeechRecognition {
   }
 
   /**
-   * 配置讯飞凭证
-   */
-  configureXfyun(config) {
-    this.xfyunRecognition.configure(config);
-    this._saveConfig();
-  }
-
-  /**
-   * 获取讯飞配置
-   */
-  getXfyunConfig() {
-    return {
-      appId: this.xfyunRecognition.appId,
-      apiSecret: this.xfyunRecognition.apiSecret,
-      apiKey: this.xfyunRecognition.apiKey,
-    };
-  }
-
-  /**
    * 配置阿里云凭证
    */
   configureAliyun(config) {
@@ -198,21 +151,19 @@ export class SpeechRecognition {
    * 开始录音识别
    */
   startListening() {
-    if (this.backend === BackendType.XFYUN) {
-      this._startXfyun();
-    } else if (this.backend === BackendType.ALIYUN) {
+    if (this.backend === BackendType.ALIYUN) {
       this._startAliyun();
     } else {
-      // 如果原生API之前因网络错误失败，且讯飞已配置，直接使用讯飞
-      if (this.nativeFailed && this.xfyunRecognition.isConfigured()) {
-        this.backend = BackendType.XFYUN;
+      // 如果原生API之前因网络错误失败，且阿里云已配置，直接使用阿里云
+      if (this.nativeFailed && this.aliyunRecognition.isConfigured()) {
+        this.backend = BackendType.ALIYUN;
         this._saveConfig();
-        this._startXfyun();
+        this._startAliyun();
         return;
       }
-      // 如果原生API之前因网络错误失败，且讯飞未配置，直接提示配置
+      // 如果原生API之前因网络错误失败，且阿里云未配置，直接提示配置
       if (this.nativeFailed) {
-        this._setState(SpeechState.ERROR, '浏览器原生语音服务不可用，请在设置中配置讯飞API', true);
+        this._setState(SpeechState.ERROR, '浏览器原生语音服务不可用，请在设置中配置阿里云API', true);
         return;
       }
       this._startNative();
@@ -223,9 +174,7 @@ export class SpeechRecognition {
    * 停止录音识别
    */
   stopListening() {
-    if (this.backend === BackendType.XFYUN) {
-      this.xfyunRecognition.stopListening();
-    } else if (this.backend === BackendType.ALIYUN) {
+    if (this.backend === BackendType.ALIYUN) {
       this.aliyunRecognition.stopListening();
     } else {
       this._stopNative();
@@ -245,9 +194,7 @@ export class SpeechRecognition {
    */
   resetTranscript() {
     this.finalTranscript = '';
-    if (this.backend === BackendType.XFYUN) {
-      this.xfyunRecognition.resetTranscript();
-    } else if (this.backend === BackendType.ALIYUN) {
+    if (this.backend === BackendType.ALIYUN) {
       this.aliyunRecognition.resetTranscript();
     }
   }
@@ -257,7 +204,6 @@ export class SpeechRecognition {
    */
   destroy() {
     this._stopNative();
-    this.xfyunRecognition.destroy();
     this.aliyunRecognition.destroy();
   }
 
@@ -350,22 +296,22 @@ export class SpeechRecognition {
 
       case 'network':
         this.nativeRetryCount++;
-        // 如果原生 API 网络错误，自动建议切换到讯飞
+        // 如果原生 API 网络错误，自动建议切换到阿里云
         this.nativeFailed = true;
         if (this.nativeRetryCount >= this.maxNativeRetry) {
           this._isManualStop = true;
-          if (this.xfyunRecognition.isConfigured()) {
-            this._setState(SpeechState.ERROR, '网络错误（可能无法访问Google服务），已自动切换到讯飞引擎');
-            // 自动切换到讯飞
-            this.backend = BackendType.XFYUN;
+          if (this.aliyunRecognition.isConfigured()) {
+            this._setState(SpeechState.ERROR, '网络错误（可能无法访问Google服务），已自动切换到阿里云引擎');
+            // 自动切换到阿里云
+            this.backend = BackendType.ALIYUN;
             this._saveConfig();
-            // 短暂延迟后自动用讯飞重试
+            // 短暂延迟后自动用阿里云重试
             setTimeout(() => {
               this.finalTranscript = '';
-              this._startXfyun();
+              this._startAliyun();
             }, 500);
           } else {
-            this._setState(SpeechState.ERROR, '网络错误，无法连接语音识别服务。请在设置中配置讯飞API以使用国内语音识别');
+            this._setState(SpeechState.ERROR, '网络错误，无法连接语音识别服务。请在设置中配置阿里云API以使用国内语音识别');
           }
         }
         break;
@@ -381,16 +327,6 @@ export class SpeechRecognition {
         console.warn('Unhandled native speech error:', event.error);
         break;
     }
-  }
-
-  // ---- 讯飞 API 方法 ----
-
-  _startXfyun() {
-    if (!this.xfyunRecognition.isConfigured()) {
-      this._setState(SpeechState.ERROR, '请先在设置中配置讯飞 API 凭证');
-      return;
-    }
-    this.xfyunRecognition.startListening();
   }
 
   // ---- 阿里云 API 方法 ----
@@ -418,11 +354,6 @@ export class SpeechRecognition {
     try {
       const config = {
         backend: this.backend,
-        xfyun: {
-          appId: this.xfyunRecognition.appId,
-          apiSecret: this.xfyunRecognition.apiSecret,
-          apiKey: this.xfyunRecognition.apiKey,
-        },
         aliyun: {
           appKey: this.aliyunRecognition.appKey,
           token: this.aliyunRecognition.token,
@@ -440,10 +371,12 @@ export class SpeechRecognition {
       if (saved) {
         const config = JSON.parse(saved);
         if (config.backend) {
-          this.backend = config.backend;
-        }
-        if (config.xfyun) {
-          this.xfyunRecognition.configure(config.xfyun);
+          // 兼容旧配置中的 xfyun 后端，映射到 native
+          if (config.backend === 'xfyun') {
+            this.backend = BackendType.NATIVE;
+          } else {
+            this.backend = config.backend;
+          }
         }
         if (config.aliyun) {
           this.aliyunRecognition.configure(config.aliyun);

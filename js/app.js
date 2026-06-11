@@ -1,7 +1,7 @@
 /**
  * 应用主入口
  * - 初始化粒子背景和语音识别
- * - 多后端支持（浏览器原生 / 讯飞）
+ * - 多后端支持（浏览器原生 / 阿里云）
  * - 设置面板管理
  * - 状态管理与 UI 更新
  */
@@ -33,12 +33,7 @@ class App {
     this.btnSettingsClose = document.getElementById('btn-settings-close');
     this.btnSettingsSave = document.getElementById('btn-settings-save');
     this.rbNative = document.getElementById('rb-native');
-    this.rbXfyun = document.getElementById('rb-xfyun');
     this.rbAliyun = document.getElementById('rb-aliyun');
-    this.xfyunConfig = document.getElementById('xfyun-config');
-    this.xfyunAppId = document.getElementById('xfyun-appid');
-    this.xfyunApiSecret = document.getElementById('xfyun-apisecret');
-    this.xfyunApiKey = document.getElementById('xfyun-apikey');
     this.aliyunConfig = document.getElementById('aliyun-config');
     this.aliyunAppKey = document.getElementById('aliyun-appkey');
     this.aliyunToken = document.getElementById('aliyun-token');
@@ -110,7 +105,6 @@ class App {
 
     // 引擎切换
     this.rbNative.addEventListener('change', () => this._onBackendChange());
-    this.rbXfyun.addEventListener('change', () => this._onBackendChange());
     this.rbAliyun.addEventListener('change', () => this._onBackendChange());
 
 
@@ -137,43 +131,25 @@ class App {
 
   _syncSettingsUI() {
     const backend = this.speech.getBackend();
-    const xfyunConfig = this.speech.getXfyunConfig();
     const aliyunConfig = this.speech.getAliyunConfig();
 
     // 同步引擎选择
-    if (backend === BackendType.XFYUN) {
-      this.rbXfyun.checked = true;
-    } else if (backend === BackendType.ALIYUN) {
+    if (backend === BackendType.ALIYUN) {
       this.rbAliyun.checked = true;
     } else {
       this.rbNative.checked = true;
     }
-
-    // 同步讯飞配置
-    this.xfyunAppId.value = xfyunConfig.appId || '';
-    this.xfyunApiSecret.value = xfyunConfig.apiSecret || '';
-    this.xfyunApiKey.value = xfyunConfig.apiKey || '';
 
     // 同步阿里云配置
     this.aliyunAppKey.value = aliyunConfig.appKey || '';
     this.aliyunToken.value = aliyunConfig.token || '';
 
     // 更新配置区域状态
-    this._updateXfyunConfigState();
     this._updateAliyunConfigState();
   }
 
   _onBackendChange() {
-    this._updateXfyunConfigState();
     this._updateAliyunConfigState();
-  }
-
-  _updateXfyunConfigState() {
-    if (this.rbXfyun.checked) {
-      this.xfyunConfig.classList.remove('disabled');
-    } else {
-      this.xfyunConfig.classList.add('disabled');
-    }
   }
 
   _updateAliyunConfigState() {
@@ -186,23 +162,13 @@ class App {
 
   _saveSettings() {
     let backend;
-    if (this.rbXfyun.checked) {
-      backend = BackendType.XFYUN;
-    } else if (this.rbAliyun.checked) {
+    if (this.rbAliyun.checked) {
       backend = BackendType.ALIYUN;
     } else {
       backend = BackendType.NATIVE;
     }
 
     this.speech.setBackend(backend);
-
-    if (backend === BackendType.XFYUN) {
-      this.speech.configureXfyun({
-        appId: this.xfyunAppId.value.trim(),
-        apiSecret: this.xfyunApiSecret.value.trim(),
-        apiKey: this.xfyunApiKey.value.trim(),
-      });
-    }
 
     if (backend === BackendType.ALIYUN) {
       this.speech.configureAliyun({
@@ -261,11 +227,9 @@ class App {
         this.btnMic.classList.add('listening');
         this.waveform.classList.add('active');
         this.recordingLine.classList.add('active');
-        const backendLabel = this.speech.getBackend() === BackendType.XFYUN
-          ? '讯飞'
-          : this.speech.getBackend() === BackendType.ALIYUN
-            ? '阿里云'
-            : '浏览器原生';
+        const backendLabel = this.speech.getBackend() === BackendType.ALIYUN
+          ? '阿里云'
+          : '浏览器原生';
         this.statusEl.textContent = `正在聆听... (${backendLabel})`;
         this.statusEl.className = 'active';
 
@@ -280,7 +244,7 @@ class App {
         this.recordingLine.classList.remove('active');
         this.statusEl.textContent = message || '发生错误，请重试';
         this.statusEl.className = 'error';
-        // 如果需要打开设置面板（如原生API失败且讯飞未配置）
+        // 如果需要打开设置面板（如原生API失败且阿里云未配置）
         if (openSettings) {
           setTimeout(() => this._openSettings(), 500);
         }
