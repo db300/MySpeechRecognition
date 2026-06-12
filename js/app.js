@@ -197,37 +197,52 @@ class App {
     btn.textContent = '获取中...';
     btn.classList.remove('success', 'error');
 
-    try {
-      const response = await fetch('/api/token');
-      const data = await response.json();
+    // 依次尝试 Node.js 端点和 PHP 端点
+    const endpoints = ['/api/token', '/api/token.php'];
+    let data = null;
 
-      if (data.success) {
-        this.aliyunToken.value = data.token;
-        btn.classList.add('success');
-        btn.textContent = '获取成功';
-        this._showToast('Token 获取成功');
-
-        // 2秒后恢复按钮状态
-        setTimeout(() => {
-          btn.classList.remove('success');
-          btn.textContent = originalText;
-          btn.disabled = false;
-        }, 2000);
-      } else {
-        btn.classList.add('error');
-        btn.textContent = '获取失败';
-        this._showToast(data.message || '获取 Token 失败');
-
-        setTimeout(() => {
-          btn.classList.remove('error');
-          btn.textContent = originalText;
-          btn.disabled = false;
-        }, 2500);
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint);
+        const result = await response.json();
+        if (result.success || result.message) {
+          data = result;
+          break;
+        }
+      } catch (err) {
+        // 当前端点不可用，尝试下一个
+        continue;
       }
-    } catch (err) {
+    }
+
+    if (!data) {
+      // 所有端点均不可用
       btn.classList.add('error');
       btn.textContent = '获取失败';
-      this._showToast('获取 Token 失败，请确认服务已启动（npm start）');
+      this._showToast('获取 Token 失败，请确认服务已启动（npm start 或 PHP 服务器）');
+      setTimeout(() => {
+        btn.classList.remove('error');
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 2500);
+      return;
+    }
+
+    if (data.success) {
+      this.aliyunToken.value = data.token;
+      btn.classList.add('success');
+      btn.textContent = '获取成功';
+      this._showToast('Token 获取成功');
+
+      setTimeout(() => {
+        btn.classList.remove('success');
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 2000);
+    } else {
+      btn.classList.add('error');
+      btn.textContent = '获取失败';
+      this._showToast(data.message || '获取 Token 失败');
 
       setTimeout(() => {
         btn.classList.remove('error');
