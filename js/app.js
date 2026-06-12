@@ -141,8 +141,8 @@ class App {
     }
 
     // 同步阿里云配置
-    this.aliyunAppKey.value = aliyunConfig.appKey || '';
-    this.aliyunToken.value = aliyunConfig.token || '';
+    this.aliyunAppKey.value = aliyunConfig.appKey || this.aliyunAppKey.value;
+    this.aliyunToken.value = aliyunConfig.token || this.aliyunToken.value;
 
     // 更新配置区域状态
     this._updateAliyunConfigState();
