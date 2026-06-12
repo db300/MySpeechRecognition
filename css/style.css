@@ -669,6 +669,57 @@ body {
   pointer-events: none;
 }
 
+/* 自动获取 Token 按钮 */
+.btn-auto-token {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  background: rgba(0, 240, 255, 0.06);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  border-radius: 6px;
+  color: var(--accent-cyan);
+  font-size: 0.82rem;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-auto-token:hover {
+  background: rgba(0, 240, 255, 0.12);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.15);
+}
+
+.btn-auto-token:active {
+  background: rgba(0, 240, 255, 0.18);
+}
+
+.btn-auto-token:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-auto-token.loading {
+  color: var(--text-muted);
+  border-color: var(--border-color);
+  background: rgba(10, 10, 15, 0.5);
+  pointer-events: none;
+}
+
+.btn-auto-token.success {
+  color: var(--color-success);
+  border-color: rgba(0, 255, 136, 0.3);
+  background: rgba(0, 255, 136, 0.06);
+}
+
+.btn-auto-token.error {
+  color: var(--color-danger);
+  border-color: rgba(255, 51, 102, 0.3);
+  background: rgba(255, 51, 102, 0.06);
+}
+
 .settings-footer {
   padding: 16px 24px;
   border-top: 1px solid var(--border-color);

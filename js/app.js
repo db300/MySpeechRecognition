@@ -37,6 +37,7 @@ class App {
     this.aliyunConfig = document.getElementById('aliyun-config');
     this.aliyunAppKey = document.getElementById('aliyun-appkey');
     this.aliyunToken = document.getElementById('aliyun-token');
+    this.btnAutoToken = document.getElementById('btn-auto-token');
   }
 
   init() {
@@ -106,6 +107,9 @@ class App {
     // 引擎切换
     this.rbNative.addEventListener('change', () => this._onBackendChange());
     this.rbAliyun.addEventListener('change', () => this._onBackendChange());
+
+    // 自动获取 Token
+    this.btnAutoToken.addEventListener('click', () => this._autoGetToken());
 
 
 
@@ -179,6 +183,58 @@ class App {
 
     this._closeSettings();
     this._showToast('设置已保存');
+  }
+
+  // ---- 自动获取 Token ----
+
+  async _autoGetToken() {
+    const btn = this.btnAutoToken;
+    const originalText = btn.textContent;
+
+    // 设置加载状态
+    btn.disabled = true;
+    btn.classList.add('loading');
+    btn.textContent = '获取中...';
+    btn.classList.remove('success', 'error');
+
+    try {
+      const response = await fetch('/api/token');
+      const data = await response.json();
+
+      if (data.success) {
+        this.aliyunToken.value = data.token;
+        btn.classList.add('success');
+        btn.textContent = '获取成功';
+        this._showToast('Token 获取成功');
+
+        // 2秒后恢复按钮状态
+        setTimeout(() => {
+          btn.classList.remove('success');
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }, 2000);
+      } else {
+        btn.classList.add('error');
+        btn.textContent = '获取失败';
+        this._showToast(data.message || '获取 Token 失败');
+
+        setTimeout(() => {
+          btn.classList.remove('error');
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }, 2500);
+      }
+    } catch (err) {
+      btn.classList.add('error');
+      btn.textContent = '获取失败';
+      this._showToast('获取 Token 失败，请确认服务已启动（npm start）');
+
+      setTimeout(() => {
+        btn.classList.remove('error');
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 2500);
+    }
   }
 
   // ---- 语音识别回调 ----
