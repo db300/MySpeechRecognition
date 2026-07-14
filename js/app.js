@@ -154,8 +154,9 @@ class App {
     const backend = this.speech.getBackend();
     const aliyunConfig = this.speech.getAliyunConfig();
 
-    // 同步背景设置
-    const bgEnabled = localStorage.getItem('background-enabled') === 'true';
+    // 同步背景设置（首次访问默认启用背景图）
+    const bgStored = localStorage.getItem('background-enabled');
+    const bgEnabled = bgStored === null ? true : bgStored === 'true';
     this.toggleBackground.checked = bgEnabled;
 
     // 同步引擎选择
@@ -207,7 +208,8 @@ class App {
   }
 
   setBackground() {
-    const enabled = localStorage.getItem('background-enabled') === 'true';
+    const stored = localStorage.getItem('background-enabled');
+    const enabled = stored === null ? true : stored === 'true';
     if (enabled) {
       this.backgroundEl.style.display = 'block';
       this.particlesCanvas.style.display = 'none';
