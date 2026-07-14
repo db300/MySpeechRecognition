@@ -35,9 +35,9 @@
 
     <!-- 识别文本展示区域 + 麦克风 + 工具栏 -->
     <div class="card-wrapper">
+      <div class="card-main">
       <div id="transcript-container">
         <div id="transcript">
-          <p class="placeholder">点击下方麦克风按钮开始语音识别...</p>
         </div>
 
         <button id="btn-mic" class="btn-mic" title="开始/停止录音 (空格键)">
@@ -48,6 +48,10 @@
             <line x1="8" y1="23" x2="16" y2="23"/>
           </svg>
         </button>
+      </div>
+
+      <!-- 提示文案（文本显示区域正下方） -->
+      <p id="hint-text" class="hint-text">点击上方麦克风按钮开始语音识别</p>
       </div>
 
       <!-- 右侧工具栏 -->

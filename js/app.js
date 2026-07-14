@@ -43,6 +43,9 @@ class App {
     this.backgroundEl = document.getElementById('background');
     this.toggleBackground = document.getElementById('toggle-background');
     this.particlesCanvas = document.getElementById('particles');
+
+    // DOM 元素 - 提示文案
+    this.hintTextEl = document.getElementById('hint-text');
   }
 
   init() {
@@ -287,7 +290,6 @@ class App {
     this.transcriptEl.innerHTML = '';
 
     if (!finalText && !interimText) {
-      this.transcriptEl.innerHTML = '<p class="placeholder">正在聆听...</p>';
       return;
     }
 
@@ -321,6 +323,8 @@ class App {
         this.recordingLine.classList.remove('active');
         this.statusEl.textContent = '点击麦克风按钮或按空格键开始';
         this.statusEl.className = '';
+        this.hintTextEl.textContent = '点击上方麦克风按钮开始语音识别';
+        this.hintTextEl.classList.remove('hidden');
         break;
 
       case SpeechState.LISTENING:
@@ -332,10 +336,7 @@ class App {
           : '浏览器原生';
         this.statusEl.textContent = `正在聆听... (${backendLabel})`;
         this.statusEl.className = 'active';
-
-        if (!this.speech.getFinalTranscript()) {
-          this.transcriptEl.innerHTML = '<p class="placeholder">正在聆听...</p>';
-        }
+        this.hintTextEl.classList.add('hidden');
         break;
 
       case SpeechState.ERROR:
@@ -356,7 +357,9 @@ class App {
 
   _clearTranscript() {
     this.speech.resetTranscript();
-    this.transcriptEl.innerHTML = '<p class="placeholder">点击下方麦克风按钮开始语音识别...</p>';
+    this.transcriptEl.innerHTML = '';
+    this.hintTextEl.textContent = '点击上方麦克风按钮开始语音识别';
+    this.hintTextEl.classList.remove('hidden');
   }
 
 
