@@ -248,6 +248,7 @@ body {
 }
 
 .hint-text.hidden {
+  display: block !important;
   opacity: 0;
   pointer-events: none;
 }
@@ -275,7 +276,7 @@ body {
   left: 50%;
   top: 100%;
   transform: translateX(-50%);
-  margin-top: 8px;
+  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -473,7 +474,7 @@ body {
    状态提示（录音时显示在卡片内部）
    ======================================== */
 #status {
-  position: absolute;
+  position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
@@ -483,7 +484,7 @@ body {
   opacity: 0;
   transition: opacity 0.3s ease;
   pointer-events: none;
-  z-index: 2;
+  z-index: 100;
 }
 
 #status.active {
