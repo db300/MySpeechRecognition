@@ -210,6 +210,7 @@ body {
 
 /* 卡片主体：纵向排列文本区域和提示文案 */
 .card-main {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -314,13 +315,21 @@ body {
 }
 
 /* ========================================
-   麦克风按钮（卡片底部居中）
+   麦克风按钮浮动层（独立于文本显示区域）
    ======================================== */
-.btn-mic {
+.btn-mic-wrapper {
   position: absolute;
-  left: 50%;
-  bottom: 28px;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: 40px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.btn-mic {
+  pointer-events: auto;
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -340,7 +349,7 @@ body {
 }
 
 .btn-mic:hover {
-  transform: translateX(-50%) scale(1.05);
+  transform: scale(1.05);
   box-shadow:
     0 6px 28px rgba(0, 0, 0, 0.35),
     0 0 40px rgba(255, 255, 255, 0.35),
@@ -932,10 +941,13 @@ body {
     line-height: 1.8;
   }
 
+  .btn-mic-wrapper {
+    bottom: 36px;
+  }
+
   .btn-mic {
     width: 64px;
     height: 64px;
-    bottom: 24px;
   }
 
   .btn-mic .icon-mic {
