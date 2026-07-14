@@ -55,6 +55,47 @@ body {
 }
 
 /* ========================================
+   背景图片层
+   ======================================== */
+#background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../img/background.png') no-repeat center center;
+  background-size: cover;
+  z-index: -1;
+  pointer-events: none;
+  display: none;
+}
+
+/* ========================================
+   右下角 Logo
+   ======================================== */
+#logo {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 128px;
+  height: 128px;
+  object-fit: contain;
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.3s ease;
+}
+
+@media (max-width: 480px) {
+  #logo {
+    bottom: 16px;
+    right: 16px;
+    width: 64px;
+    height: 64px;
+  }
+}
+
+/* ========================================
    粒子画布
    ======================================== */
 #particles {
@@ -694,6 +735,70 @@ body {
 .settings-field select option {
   background: var(--bg-secondary);
   color: var(--text-primary);
+}
+
+/* ========================================
+   设置面板 - Toggle 开关
+   ======================================== */
+.settings-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: rgba(10, 10, 15, 0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.settings-toggle-text {
+  font-size: 0.88rem;
+  color: var(--text-primary);
+}
+
+.settings-toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.settings-toggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+  transition: all 0.25s ease;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  transition: all 0.25s ease;
+}
+
+.settings-toggle input:checked + .toggle-slider {
+  background: rgba(0, 240, 255, 0.25);
+  border-color: var(--accent-cyan);
+}
+
+.settings-toggle input:checked + .toggle-slider::before {
+  transform: translateX(20px);
+  background: var(--accent-cyan);
 }
 
 /* 进度条 */

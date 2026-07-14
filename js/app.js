@@ -38,9 +38,17 @@ class App {
     this.aliyunAppKey = document.getElementById('aliyun-appkey');
     this.aliyunToken = document.getElementById('aliyun-token');
     this.btnAutoToken = document.getElementById('btn-auto-token');
+
+    // DOM 元素 - 背景设置
+    this.backgroundEl = document.getElementById('background');
+    this.toggleBackground = document.getElementById('toggle-background');
+    this.particlesCanvas = document.getElementById('particles');
   }
 
   init() {
+    // 初始化背景设置
+    this.setBackground();
+
     // 初始化粒子背景
     this.particles.init();
 
@@ -111,6 +119,12 @@ class App {
     // 自动获取 Token
     this.btnAutoToken.addEventListener('click', () => this._autoGetToken());
 
+    // 背景图片开关
+    this.toggleBackground.addEventListener('change', () => {
+      localStorage.setItem('background-enabled', this.toggleBackground.checked);
+      this.setBackground();
+    });
+
 
 
     // 保存设置
@@ -136,6 +150,10 @@ class App {
   _syncSettingsUI() {
     const backend = this.speech.getBackend();
     const aliyunConfig = this.speech.getAliyunConfig();
+
+    // 同步背景设置
+    const bgEnabled = localStorage.getItem('background-enabled') === 'true';
+    this.toggleBackground.checked = bgEnabled;
 
     // 同步引擎选择
     if (backend === BackendType.ALIYUN) {
@@ -183,6 +201,17 @@ class App {
 
     this._closeSettings();
     this._showToast('设置已保存');
+  }
+
+  setBackground() {
+    const enabled = localStorage.getItem('background-enabled') === 'true';
+    if (enabled) {
+      this.backgroundEl.style.display = 'block';
+      this.particlesCanvas.style.display = 'none';
+    } else {
+      this.backgroundEl.style.display = 'none';
+      this.particlesCanvas.style.display = 'block';
+    }
   }
 
   // ---- 自动获取 Token ----
