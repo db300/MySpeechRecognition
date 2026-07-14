@@ -2,14 +2,16 @@
 schema_version: 1
 locale: zh-CN
 branch: main
-exported_at: "2026-06-12T08:34:10Z"
+nodes_managed: true
+exported_at: "2026-07-14T06:13:12Z"
 modules:
     "":
-        dir_name: Web 语音识别全栈应用
-        title: Web 语音识别全栈应用
+        dir_name: 阿里云语音识别全栈演示应用
+        title: 阿里云语音识别全栈演示应用
         scope: []
         source_files: []
-        children: []
+        children:
+            - api
         depends_on: []
         related_to: []
     api:
