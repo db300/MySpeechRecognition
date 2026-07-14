@@ -273,21 +273,23 @@ body {
 #waveform {
   position: absolute;
   left: 50%;
-  bottom: 130px;
+  top: 100%;
   transform: translateX(-50%);
+  margin-top: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 4px;
   height: 40px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
   pointer-events: none;
-  z-index: 2;
 }
 
 #waveform.active {
   opacity: 1;
+  visibility: visible;
 }
 
 #waveform .bar {
@@ -329,6 +331,7 @@ body {
 }
 
 .btn-mic {
+  position: relative;
   pointer-events: auto;
   width: 72px;
   height: 72px;
