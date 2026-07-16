@@ -1,6 +1,6 @@
 schema_version: 1
 module_path: ""
-title: 阿里云语音识别全栈演示应用
+title: 阿里云 NLS 语音识别单进程全栈应用
 scope: []
 source_files: []
 depends_on: []
