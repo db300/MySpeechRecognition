@@ -77,8 +77,8 @@ body {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 128px;
-  height: 128px;
+  width: 96px;
+  height: 96px;
   object-fit: contain;
   opacity: 0.75;
   pointer-events: none;
@@ -148,6 +148,7 @@ body {
 .header {
   text-align: center;
   margin-bottom: 32px;
+  margin-top: -60px;
 }
 
 .title {
@@ -157,6 +158,15 @@ body {
   letter-spacing: 0.12em;
   color: #ffffff;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.subtitle {
+  font-family: var(--font-ui);
+  font-size: 0.95rem;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: #888899;
+  margin-top: 10px;
 }
 
 @keyframes neonFlicker {
@@ -397,8 +407,7 @@ body {
 .toolbar {
   position: absolute;
   right: -64px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -929,6 +938,10 @@ body {
     letter-spacing: 0.1em;
   }
 
+  .subtitle {
+    font-size: 0.88rem;
+  }
+
   .header {
     margin-bottom: 24px;
   }
@@ -983,6 +996,10 @@ body {
   .title {
     font-size: 1.2rem;
     letter-spacing: 0.08em;
+  }
+
+  .subtitle {
+    font-size: 0.8rem;
   }
 
   .header {

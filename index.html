@@ -11,7 +11,7 @@
   <div id="background"></div>
 
   <!-- 右下角 Logo -->
-  <img id="logo" src="img/logo.png" alt="Logo">
+  <img id="logo" src="img/hanyilogo.svg" alt="Logo">
 
   <!-- 粒子背景画布 -->
   <canvas id="particles"></canvas>
@@ -30,7 +30,8 @@
     </button>
 
     <header class="header">
-      <p class="title">实时语音转文字</p>
+      <p class="title">你可以对我说点什么</p>
+      <p class="subtitle">说吧，我在听。你的每一句话，都会翻译成神秘鸟文。</p>
     </header>
 
     <!-- 识别文本展示区域 + 麦克风 + 工具栏 -->
@@ -63,7 +64,7 @@
       </div>
 
       <!-- 提示文案（文本显示区域正下方） -->
-      <p id="hint-text" class="hint-text">点击上方麦克风按钮开始语音识别</p>
+      <p id="hint-text" class="hint-text">点击按钮 开始翻译</p>
       </div>
 
       <!-- 右侧工具栏 -->
@@ -75,7 +76,7 @@
         </svg>
         <span>删除</span>
       </button>
-      <button id="btn-copy" class="toolbar-btn" title="复制文本">
+      <button id="btn-copy" class="toolbar-btn hidden" title="复制文本">
         <svg class="toolbar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
           <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
