@@ -187,24 +187,32 @@ body {
   max-width: 720px;
   aspect-ratio: 1080 / 640;
   max-height: 70vh;
-  padding: 32px 36px 100px;
   background: url('../img/textbox.png') no-repeat center center / cover;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
+}
+
+#transcript {
+  position: absolute;
+  top: 8%;
+  left: 5%;
+  right: 5%;
+  bottom: 28%;
   overflow-y: auto;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  z-index: 3;
 }
 
-#transcript-container::-webkit-scrollbar {
+#transcript::-webkit-scrollbar {
   width: 4px;
 }
 
-#transcript-container::-webkit-scrollbar-track {
+#transcript::-webkit-scrollbar-track {
   background: transparent;
 }
 
-#transcript-container::-webkit-scrollbar-thumb {
+#transcript::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
 }
@@ -233,7 +241,7 @@ body {
   line-height: 1.9;
   color: var(--text-primary);
   word-break: break-all;
-  min-height: 100%;
+  padding: 24px 28px;
   display: flex;
   flex-direction: column;
 }
@@ -253,7 +261,8 @@ body {
   font-family: var(--font-ui);
   font-size: 0.9rem;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 24px;
+  margin-bottom: -20px;
   transition: opacity 0.3s ease;
 }
 
@@ -949,13 +958,13 @@ body {
   #transcript-container {
     min-height: 380px;
     max-height: 60vh;
-    padding: 24px 24px 96px;
     border-radius: 20px;
   }
 
   #transcript {
     font-size: 1.2rem;
     line-height: 1.8;
+    padding: 18px 20px;
   }
 
   .btn-mic-wrapper {
@@ -1010,13 +1019,13 @@ body {
   #transcript-container {
     min-height: 320px;
     max-height: calc(100vh - 220px);
-    padding: 20px 20px 92px;
     border-radius: 18px;
   }
 
   #transcript {
     font-size: 1.05rem;
     line-height: 1.7;
+    padding: 14px 16px;
   }
 
   .btn-mic {

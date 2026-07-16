@@ -312,7 +312,7 @@ class App {
       this.transcriptEl.appendChild(span);
     }
 
-    this.transcriptContainer.scrollTop = this.transcriptContainer.scrollHeight;
+    this.transcriptEl.scrollTop = this.transcriptEl.scrollHeight;
   }
 
   _onStateChange(state, message, openSettings) {
