@@ -323,9 +323,7 @@ class App {
         this.btnMic.classList.remove('listening');
         this.waveform.classList.remove('active');
         this.recordingLine.classList.remove('active');
-        this.statusEl.textContent = '点击麦克风按钮或按空格键开始';
         this.statusEl.className = '';
-        this.hintTextEl.textContent = '点击上方麦克风按钮开始语音识别';
         this.hintTextEl.classList.remove('hidden');
         break;
 

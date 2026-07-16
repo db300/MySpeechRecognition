@@ -118,8 +118,8 @@ body {
   transform: translateX(-50%);
   width: 0;
   height: 2px;
-  background: var(--color-success);
-  box-shadow: 0 0 8px var(--color-success), 0 0 20px var(--color-success);
+  background: #ffffff;
+  box-shadow: 0 0 8px #ffffff, 0 0 20px #ffffff;
   z-index: 100;
   transition: width 0.5s ease;
 }
@@ -315,9 +315,9 @@ body {
 #waveform .bar {
   width: 4px;
   height: 8px;
-  background: var(--color-success);
+  background: #ffffff;
   border-radius: 2px;
-  box-shadow: 0 0 6px var(--color-success);
+  box-shadow: 0 0 6px #ffffff;
   transition: height 0.1s ease;
 }
 
@@ -357,20 +357,22 @@ body {
   height: 72px;
   border-radius: 50%;
   border: none;
-  background: #ffffff;
-  color: #0f0f14;
+  background: url('../img/btn_normal.png') center / cover no-repeat;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.3s ease;
+  /*
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 0 30px rgba(255, 255, 255, 0.25),
     0 0 60px rgba(255, 255, 255, 0.1);
+  */
   z-index: 3;
 }
 
+/*
 .btn-mic:hover {
   transform: scale(1.05);
   box-shadow:
@@ -378,23 +380,25 @@ body {
     0 0 40px rgba(255, 255, 255, 0.35),
     0 0 80px rgba(255, 255, 255, 0.15);
 }
+*/
 
 .btn-mic .icon-mic {
-  width: 30px;
-  height: 30px;
+  display: none;
 }
 
 /* 录音中的麦克风按钮 */
 .btn-mic.listening {
-  background: var(--color-success);
-  color: #0f0f14;
+  background: url('../img/btn_actived.png') center / cover no-repeat;
+  /*
   animation: micPulse 2s ease-in-out infinite;
   box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.3),
     0 0 30px rgba(0, 255, 136, 0.35),
     0 0 70px rgba(0, 255, 136, 0.15);
+  */
 }
 
+/*
 @keyframes micPulse {
   0%, 100% {
     box-shadow:
@@ -409,6 +413,7 @@ body {
       0 0 100px rgba(0, 255, 136, 0.25);
   }
 }
+*/
 
 /* ========================================
    右侧工具栏
@@ -506,7 +511,7 @@ body {
 }
 
 #status.active {
-  color: var(--color-success);
+  color: #ffffff;
   opacity: 1;
 }
 
