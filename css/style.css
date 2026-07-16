@@ -139,7 +139,8 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  padding: 40px 80px 40px 24px;
+  /*padding: 40px 80px 40px 24px;*/
+  padding: 40px 24px;
 }
 
 /* ========================================
@@ -944,7 +945,8 @@ body {
    ======================================== */
 @media (max-width: 768px) {
   #app {
-    padding: 40px 72px 40px 24px;
+    /*padding: 40px 72px 40px 24px;*/
+    padding: 40px 24px;
   }
 
   .title {
